@@ -167,7 +167,6 @@ export async function GET(request, context) {
   const diffLabel = `${Math.abs(ratingDiff)} points ${ratingDiff >= 0 ? 'above' : 'below'} you`
 
   const lines = [
-    `---`,
     ``,
     `### ♟ Last Match`,
     ``,
@@ -193,7 +192,7 @@ export async function GET(request, context) {
     `Peak hours: ${timeOfDay}`,
     personalBest ? `Personal best: ${personalBest}` : null,
     ``,
-    `---`,
+
   ]
     .filter(line => line !== null)
     .join('\n')
