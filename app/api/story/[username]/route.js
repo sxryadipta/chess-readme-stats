@@ -148,35 +148,61 @@ export async function GET(request, context) {
     ? dateMatch[1].replace(/\./g, '-')
     : new Date(lastGame.end_time * 1000).toDateString()
 
-  // building the markdown story
+  const monthName = now.toLocaleString('default', { month: 'short' })
+  const day = now.getDate()
+  const displayDate = dateMatch
+    ? dateMatch[1].replace(/\./g, '-')
+    : `${monthName} ${day}, ${year}`
+
+  const timeClassLabel = lastGame.time_class.charAt(0).toUpperCase()
+    + lastGame.time_class.slice(1)
+
+  const colorLabel = myColor.charAt(0).toUpperCase() + myColor.slice(1)
+
+  const ratingBefore = myRating - (ratingDelta ?? 0)
   const ratingDeltaStr = ratingDelta !== null
     ? `${ratingDelta >= 0 ? '+' : ''}${ratingDelta}`
-    : 'unknown'
+    : null
 
-  const story = [
-    `Last Match — ${gameDate}`,
+  const diffLabel = `${Math.abs(ratingDiff)} points ${ratingDiff >= 0 ? 'above' : 'below'} you`
+
+  const lines = [
+    `---`,
     ``,
-    `Played ${lastGame.time_class.charAt(0).toUpperCase() + lastGame.time_class.slice(1)} (${timeLabel}) as ${myColor.charAt(0).toUpperCase() + myColor.slice(1)}`,
+    `### ♟ Last Match`,
+    ``,
+    `${displayDate} · ${timeClassLabel} (${timeLabel}) · Playing as ${colorLabel}`,
+    ``,
     `${resultLine} after ${moveCount} moves`,
     ``,
-    `Opponent: ${opponentUsername} - ${opponentRating} rated (${ratingDiff >= 0 ? '+' : '-'} ${Math.abs(ratingDiff)} ${ratingDiff >= 0 ? 'above' : 'below'} you)`,
-    opening ? `Opening: ${opening}${eco ? ` - ECO ${eco}` : ''}` : null,
-    accuracy ? `Accuracy: ${accuracy}%` : null,
+    opening || eco
+      ? `Opening: ${opening ?? ''}${opening && eco ? ' · ' : ''}${eco ? `ECO ${eco}` : ''}`
+      : null,
+    accuracy
+      ? `Accuracy: ${Number(accuracy).toFixed(1)}%`
+      : null,
     ``,
-    `Rating: ${myRating - (ratingDelta ?? 0)} -> ${myRating}  (${ratingDeltaStr})`,
+    `Opponent: ${opponentUsername} · ${opponentRating} rated (${diffLabel})`,
+    ``,
+    ratingDelta !== null
+      ? `Rating: ${ratingBefore} → ${myRating} (${ratingDeltaStr})`
+      : null,
     `Streak: ${streakLabel}`,
-    `This month: ${wins}W ${losses}L ${draws}D`,
+    `This month: ${wins}W ${losses}L ${draws}D (${timeClassLabel})`,
     ``,
-    `I mostly play during ${timeOfDay}`,
+    `Peak hours: ${timeOfDay}`,
     personalBest ? `Personal best: ${personalBest}` : null,
+    ``,
+    `---`,
   ]
-    .filter(line => line !== null)   // removes lines with missing data
+    .filter(line => line !== null)
     .join('\n')
 
-  return new Response(story, {
+  return new Response(lines, {
     status: 200,
     headers: {
-      'Content-Type': 'text/plain',
+      'Content-Type': 'text/plain; charset=utf-8',
     },
   })
+  
 }
