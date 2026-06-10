@@ -1,5 +1,5 @@
-export async function GET(request, { params }) {
-  const { username } = params
+export async function GET(request, context) {
+  const { username } = await context.params
 
   // get current year and month for the API URL
   const now = new Date()
@@ -154,20 +154,20 @@ export async function GET(request, { params }) {
     : 'unknown'
 
   const story = [
-    `♟ Last Match — ${gameDate}`,
+    `Last Match — ${gameDate}`,
     ``,
     `Played ${lastGame.time_class.charAt(0).toUpperCase() + lastGame.time_class.slice(1)} (${timeLabel}) as ${myColor.charAt(0).toUpperCase() + myColor.slice(1)}`,
     `${resultLine} after ${moveCount} moves`,
     ``,
-    `Opponent: ${opponentUsername} · ${opponentRating} rated (${ratingDiff >= 0 ? '↑' : '↓'} ${Math.abs(ratingDiff)} ${ratingDiff >= 0 ? 'above' : 'below'} you)`,
-    opening ? `Opening: ${opening}${eco ? ` · ECO ${eco}` : ''}` : null,
+    `Opponent: ${opponentUsername} - ${opponentRating} rated (${ratingDiff >= 0 ? '+' : '-'} ${Math.abs(ratingDiff)} ${ratingDiff >= 0 ? 'above' : 'below'} you)`,
+    opening ? `Opening: ${opening}${eco ? ` - ECO ${eco}` : ''}` : null,
     accuracy ? `Accuracy: ${accuracy}%` : null,
     ``,
-    `Rating: ${myRating - (ratingDelta ?? 0)} → ${myRating}  (${ratingDeltaStr})`,
+    `Rating: ${myRating - (ratingDelta ?? 0)} -> ${myRating}  (${ratingDeltaStr})`,
     `Streak: ${streakLabel}`,
     `This month: ${wins}W ${losses}L ${draws}D`,
     ``,
-    `I mostly play ${timeOfDay}`,
+    `I mostly play during ${timeOfDay}`,
     personalBest ? `Personal best: ${personalBest}` : null,
   ]
     .filter(line => line !== null)   // removes lines with missing data
