@@ -1,3 +1,16 @@
+function formatOpeningName(ecoUrl) {
+  if (!ecoUrl || typeof ecoUrl !== 'string') return null
+
+  const slug = ecoUrl.split('/openings/')[1]?.split('?')[0]
+  if (!slug) return null
+
+  return slug
+    .replace(/\.\.\./g, ' — ')
+    .replace(/-/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+}
+
 export async function GET(request, context) {
   const { username } = await context.params
 
@@ -65,13 +78,13 @@ export async function GET(request, context) {
   const moveMatches = lastGame.pgn.match(/(\d+)\./g)
   const moveCount = moveMatches ? moveMatches.length : 'unknown'
 
-  // extract opening and ECO from PGN headers
-  const openingMatch = lastGame.pgn.match(/\[Opening "(.+?)"\]/)
+  // extract opening and ECO — Chess.com uses ECOUrl / eco URL, not [Opening]
   const ecoMatch = lastGame.pgn.match(/\[ECO "(.+?)"\]/)
-  const opening = openingMatch ? openingMatch[1] : null
+  const ecoUrlMatch = lastGame.pgn.match(/\[ECOUrl "(.+?)"\]/)
   const eco = ecoMatch ? ecoMatch[1] : null
+  const opening = formatOpeningName(ecoUrlMatch?.[1] ?? lastGame.eco)
 
-  // extract accuracy if available
+  // extract accuracy if available (may be missing on unrated or older games)
   const accuracy = lastGame.accuracies?.[myColor] ?? null
 
   // Step 12: compute rating delta using last two games
@@ -144,10 +157,6 @@ export async function GET(request, context) {
 
   // game date from PGN header
   const dateMatch = lastGame.pgn.match(/\[Date "(.+?)"\]/)
-  const gameDate = dateMatch
-    ? dateMatch[1].replace(/\./g, '-')
-    : new Date(lastGame.end_time * 1000).toDateString()
-
   const monthName = now.toLocaleString('default', { month: 'short' })
   const day = now.getDate()
   const displayDate = dateMatch
