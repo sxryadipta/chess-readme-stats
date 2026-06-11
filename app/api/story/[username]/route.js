@@ -167,8 +167,7 @@ export async function GET(request, context) {
   const diffLabel = `${Math.abs(ratingDiff)} points ${ratingDiff >= 0 ? 'above' : 'below'} you`
 
   const lines = [
-    ``,
-    `### ♟ Last Match`,
+
     ``,
     `${displayDate} · ${timeClassLabel} (${timeLabel}) · Playing as ${colorLabel}`,
     ``,
