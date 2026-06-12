@@ -8,6 +8,7 @@ export default function Home() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
   const [copied, setCopied] = useState(null)
+  const [activeTab, setActiveTab] = useState('story')
 
   async function handleSubmit(e) {
     e.preventDefault()
@@ -77,7 +78,7 @@ jobs:
 
   const readmeToken = `<!-- CHESS_STORY -->
 <!-- /CHESS_STORY -->`
-
+  const cardEmbed = `![Chess Stats](https://chess-readme-stats.vercel.app/api/card/${username}.svg)`
   return (
     <main className="min-h-screen bg-gray-950 text-gray-100 px-4 py-16">
       <div className="max-w-2xl mx-auto space-y-12">
@@ -116,99 +117,164 @@ jobs:
           <p className="text-red-400 text-sm">{error}</p>
         )}
 
-        {/* Story preview + instructions */}
         {story && (
-          <div className="space-y-10">
+  <div className="space-y-8">
 
-            {/* Preview */}
-            <div className="space-y-3">
-              <div className="flex items-center justify-between">
-                <h2 className="text-lg font-medium text-white">Your story preview</h2>
-                <button
-                  onClick={() => copyToClipboard(story, 'story')}
-                  className="text-sm text-gray-400 hover:text-white transition-colors"
-                >
-                  {copied === 'story' ? 'Copied!' : 'Copy'}
-                </button>
-              </div>
-              <pre className="bg-gray-900 border border-gray-800 rounded-lg p-5 text-sm text-gray-300 whitespace-pre-wrap leading-relaxed">
-                {story}
-              </pre>
-            </div>
+    {/* Tab switcher */}
+    <div className="flex gap-1 bg-gray-900 p-1 rounded-lg w-fit">
+      <button
+        onClick={() => setActiveTab('story')}
+        className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+          activeTab === 'story'
+            ? 'bg-white text-gray-950'
+            : 'text-gray-400 hover:text-white'
+        }`}
+      >
+        Story mode
+      </button>
+      <button
+        onClick={() => setActiveTab('card')}
+        className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+          activeTab === 'card'
+            ? 'bg-white text-gray-950'
+            : 'text-gray-400 hover:text-white'
+        }`}
+      >
+        Card mode
+      </button>
+    </div>
 
-            {/* Step 1 */}
-            <div className="space-y-3">
-              <div className="flex items-start gap-4">
-                <span className="text-gray-600 font-mono text-sm mt-1">01</span>
-                <div className="flex-1 space-y-3">
-                  <h2 className="text-lg font-medium text-white">
-                    Add this to your README
-                  </h2>
-                  <p className="text-gray-400 text-sm">
-                    Open your GitHub profile README and paste these tokens wherever you want the story to appear.
-                  </p>
-                  <div className="flex items-center justify-between bg-gray-900 border border-gray-800 rounded-lg px-5 py-4">
-                    <pre className="text-sm text-gray-300 font-mono">{readmeToken}</pre>
-                    <button
-                      onClick={() => copyToClipboard(readmeToken, 'token')}
-                      className="text-sm text-gray-400 hover:text-white transition-colors ml-4 shrink-0"
-                    >
-                      {copied === 'token' ? 'Copied!' : 'Copy'}
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
+    {/* Story tab */}
+    {activeTab === 'story' && (
+      <div className="space-y-10">
 
-            {/* Step 2 */}
-            <div className="space-y-3">
-              <div className="flex items-start gap-4">
-                <span className="text-gray-600 font-mono text-sm mt-1">02</span>
-                <div className="flex-1 space-y-3">
-                  <h2 className="text-lg font-medium text-white">
-                    Add the GitHub Actions workflow
-                  </h2>
-                  <p className="text-gray-400 text-sm">
-                    In your profile repo create the file{' '}
-                    <code className="bg-gray-800 px-1.5 py-0.5 rounded text-gray-300">
-                      .github/workflows/chess.yml
-                    </code>{' '}
-                    and paste this inside it.
-                  </p>
-                  <div className="relative">
-                    <pre className="bg-gray-900 border border-gray-800 rounded-lg p-5 text-sm text-gray-300 overflow-x-auto">
-                      {workflowYaml}
-                    </pre>
-                    <button
-                      onClick={() => copyToClipboard(workflowYaml, 'yaml')}
-                      className="absolute top-3 right-3 text-sm text-gray-400 hover:text-white transition-colors bg-gray-900 px-2 py-1 rounded"
-                    >
-                      {copied === 'yaml' ? 'Copied!' : 'Copy'}
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Step 3 */}
-            <div className="flex items-start gap-4">
-              <span className="text-gray-600 font-mono text-sm mt-1">03</span>
-              <div className="space-y-2">
-                <h2 className="text-lg font-medium text-white">
-                  Run the workflow
-                </h2>
-                <p className="text-gray-400 text-sm leading-relaxed">
-                  Go to your profile repo on GitHub, click the{' '}
-                  <span className="text-gray-300">Actions</span> tab, select{' '}
-                  <span className="text-gray-300">Update Chess Story</span>, and click{' '}
-                  <span className="text-gray-300">Run workflow</span>.
-                  Your README updates immediately. After that it runs automatically every 6 hours.
-                </p>
-              </div>
-            </div>
-
+        <div className="space-y-3">
+          <div className="flex items-center justify-between">
+            <h2 className="text-lg font-medium text-white">Your story preview</h2>
+            <button
+              onClick={() => copyToClipboard(story, 'story')}
+              className="text-sm text-gray-400 hover:text-white transition-colors"
+            >
+              {copied === 'story' ? 'Copied!' : 'Copy'}
+            </button>
           </div>
-        )}
+          <pre className="bg-gray-900 border border-gray-800 rounded-lg p-5 text-sm text-gray-300 whitespace-pre-wrap leading-relaxed">
+            {story}
+          </pre>
+        </div>
+
+        <div className="flex items-start gap-4">
+          <span className="text-gray-600 font-mono text-sm mt-1">01</span>
+          <div className="flex-1 space-y-3">
+            <h2 className="text-lg font-medium text-white">Add this to your README</h2>
+            <p className="text-gray-400 text-sm">
+              Paste these tokens wherever you want the story to appear.
+            </p>
+            <div className="flex items-center justify-between bg-gray-900 border border-gray-800 rounded-lg px-5 py-4">
+              <pre className="text-sm text-gray-300 font-mono">{readmeToken}</pre>
+              <button
+                onClick={() => copyToClipboard(readmeToken, 'token')}
+                className="text-sm text-gray-400 hover:text-white transition-colors ml-4 shrink-0"
+              >
+                {copied === 'token' ? 'Copied!' : 'Copy'}
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div className="flex items-start gap-4">
+          <span className="text-gray-600 font-mono text-sm mt-1">02</span>
+          <div className="flex-1 space-y-3">
+            <h2 className="text-lg font-medium text-white">Add the GitHub Actions workflow</h2>
+            <p className="text-gray-400 text-sm">
+              Create{' '}
+              <code className="bg-gray-800 px-1.5 py-0.5 rounded text-gray-300">
+                .github/workflows/chess.yml
+              </code>{' '}
+              in your profile repo and paste this inside it.
+            </p>
+            <div className="relative">
+              <pre className="bg-gray-900 border border-gray-800 rounded-lg p-5 text-sm text-gray-300 overflow-x-auto">
+                {workflowYaml}
+              </pre>
+              <button
+                onClick={() => copyToClipboard(workflowYaml, 'yaml')}
+                className="absolute top-3 right-3 text-sm text-gray-400 hover:text-white transition-colors bg-gray-900 px-2 py-1 rounded"
+              >
+                {copied === 'yaml' ? 'Copied!' : 'Copy'}
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div className="flex items-start gap-4">
+          <span className="text-gray-600 font-mono text-sm mt-1">03</span>
+          <div className="space-y-2">
+            <h2 className="text-lg font-medium text-white">Run the workflow</h2>
+            <p className="text-gray-400 text-sm leading-relaxed">
+              Go to your profile repo, click the{' '}
+              <span className="text-gray-300">Actions</span> tab, select{' '}
+              <span className="text-gray-300">Update Chess Story</span>, and click{' '}
+              <span className="text-gray-300">Run workflow</span>.
+            </p>
+          </div>
+        </div>
+
+      </div>
+    )}
+
+    {/* Card tab */}
+    {activeTab === 'card' && (
+      <div className="space-y-10">
+
+        <div className="space-y-3">
+          <h2 className="text-lg font-medium text-white">Your card preview</h2>
+          <div className="bg-gray-900 border border-gray-800 rounded-lg p-5">
+            <img
+              src={`/api/card/${username}.svg`}
+              alt="Chess stats card"
+              className="max-w-full"
+            />
+          </div>
+        </div>
+
+        <div className="flex items-start gap-4">
+          <span className="text-gray-600 font-mono text-sm mt-1">01</span>
+          <div className="flex-1 space-y-3">
+            <h2 className="text-lg font-medium text-white">Add this to your README</h2>
+            <p className="text-gray-400 text-sm">
+              Paste this one line anywhere in your README. No workflow needed.
+            </p>
+            <div className="flex items-center justify-between bg-gray-900 border border-gray-800 rounded-lg px-5 py-4">
+              <pre className="text-sm text-gray-300 font-mono overflow-x-auto">
+                {cardEmbed}
+              </pre>
+              <button
+                onClick={() => copyToClipboard(cardEmbed, 'card')}
+                className="text-sm text-gray-400 hover:text-white transition-colors ml-4 shrink-0"
+              >
+                {copied === 'card' ? 'Copied!' : 'Copy'}
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div className="flex items-start gap-4">
+          <span className="text-gray-600 font-mono text-sm mt-1">02</span>
+          <div className="space-y-2">
+            <h2 className="text-lg font-medium text-white">That's it</h2>
+            <p className="text-gray-400 text-sm leading-relaxed">
+              The card updates automatically every time someone views your README.
+              No GitHub Actions, no setup, no maintenance.
+            </p>
+          </div>
+        </div>
+
+      </div>
+    )}
+
+  </div>
+)}
 
       </div>
     </main>
